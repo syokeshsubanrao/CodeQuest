@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CodeQuest: learn to code by playing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f6fb;--sf:#fff;--sf2:#e7edf7;--tx:#14213d;--mu:#5a6a88;--xp:#e8a100;--ok:#12a36b;--bad:#e5484d;--ac:#3a5bd9;--ln:#cfd8e8;
+ box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1b33;--sf:#1a2c52;--sf2:#243a68;--tx:#eef3ff;--mu:#9fb0d3;--xp:#ffc83d;--ok:#4be0a8;--bad:#ff6b6b;--ac:#7c9bff;--ln:#2f4678}}
+:root[data-theme="dark"]{--bg:#0f1b33;--sf:#1a2c52;--sf2:#243a68;--tx:#eef3ff;--mu:#9fb0d3;--xp:#ffc83d;--ok:#4be0a8;--bad:#ff6b6b;--ac:#7c9bff;--ln:#2f4678}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:500 16px/1.5 "Bricolage Grotesque",system-ui,sans-serif}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+code,pre,.mono{font-family:"JetBrains Mono",ui-monospace,Menlo,monospace}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:2px solid var(--ln)}
+.bar{max-width:880px;margin:auto;display:flex;gap:14px;align-items:center;padding:10px 16px;flex-wrap:wrap}
+.logo{font-weight:800;font-size:22px;margin-right:auto}
+.stat{display:flex;align-items:center;gap:6px;font-weight:700;background:var(--sf);border:2px solid var(--ln);border-radius:999px;padding:4px 12px}
+.lvl{width:100%;height:10px;background:var(--sf2);border-radius:9px;overflow:hidden}
+.lvl i{display:block;height:100%;background:var(--xp);transition:width .5s}
+main{max-width:880px;margin:auto;padding:20px 16px 60px;display:grid;gap:28px;grid-template-columns:1fr}
+@media(min-width:760px){main{grid-template-columns:1.4fr 1fr}}
+h2{font-size:20px;margin:0 0 12px;font-weight:800}
+.trail{display:flex;flex-direction:column;gap:22px;padding:6px 0}
+.node{display:flex;align-items:center;gap:16px;width:100%;background:none;border:0;text-align:left;padding:0}
+.node:nth-child(even){flex-direction:row-reverse;text-align:right}
+.orb{flex:none;width:76px;height:76px;border-radius:50%;display:grid;place-items:center;font-size:30px;background:var(--ac);color:#fff;border-bottom:7px solid rgba(0,0,0,.25);transition:transform .1s}
+.node:hover:not([disabled]) .orb{transform:translateY(-3px)}
+.node:active:not([disabled]) .orb{transform:translateY(3px);border-bottom-width:3px}
+.node.done .orb{background:var(--ok)}
+.node[disabled] .orb{background:var(--sf2);color:var(--mu);cursor:not-allowed}
+.node[disabled]{cursor:not-allowed}
+.node b{display:block;font-size:18px}.node span{color:var(--mu);font-size:14px}
+.card{background:var(--sf);border:2px solid var(--ln);border-radius:16px;padding:16px}
+.badges{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.badge{border:2px dashed var(--ln);border-radius:12px;padding:10px;text-align:center;font-size:13px;color:var(--mu);filter:grayscale(1);opacity:.7}
+.badge.on{border:2px solid var(--xp);color:var(--tx);filter:none;opacity:1}.badge div{font-size:26px}
+.lb{list-style:none;margin:0;padding:0}.lb li{display:flex;justify-content:space-between;padding:8px 4px;border-bottom:1px solid var(--ln)}
+.lb li.me{font-weight:800;color:var(--ac)}
+.side{display:grid;gap:20px;align-content:start}
+.ghost{background:none;border:2px solid var(--ln);border-radius:10px;padding:6px 12px;color:var(--mu)}
+section{min-width:0}.tabs{display:flex;flex-wrap:wrap;gap:8px;padding-bottom:10px;margin-bottom:8px}.tab{flex:none;background:var(--sf);border:2px solid var(--ln);border-bottom-width:4px;border-radius:999px;padding:6px 14px;font-weight:700}.tab.on{background:var(--ac);border-color:var(--ac);color:#fff}
+/* lesson overlay */
+#play{position:fixed;inset:0;background:var(--bg);z-index:10;display:none;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+#play.open{display:flex}
+.ptop{display:flex;gap:12px;align-items:center;max-width:680px;width:100%;margin:auto;padding:14px 16px}
+.x{background:none;border:0;font-size:26px;color:var(--mu)}
+.prog{flex:1;height:14px;background:var(--sf2);border-radius:9px;overflow:hidden}.prog i{display:block;height:100%;background:var(--ok);width:0;transition:width .3s}
+.pbody{flex:1;overflow:auto;max-width:680px;width:100%;margin:auto;padding:8px 16px}
+.pbody h3{font-size:24px;margin:8px 0 14px}
+pre{background:#0c1426;color:#e6edff;border-radius:12px;padding:14px;font-size:15px;overflow-x:auto;margin:0 0 16px}
+pre u{color:#ffc83d;text-decoration:none;border-bottom:2px dashed #ffc83d;padding:0 4px}
+.opts{display:grid;gap:10px}
+.opt{text-align:left;background:var(--sf);border:2px solid var(--ln);border-bottom-width:5px;border-radius:12px;padding:12px 14px;font-family:"JetBrains Mono",monospace;font-size:15px}
+.opt.sel{border-color:var(--ac);background:var(--sf2)}
+.opt.right{border-color:var(--ok)}.opt.wrong{border-color:var(--bad)}
+.foot{border-top:2px solid var(--ln);padding:14px 16px}
+.foot .in{max-width:680px;margin:auto;display:flex;gap:14px;align-items:center;justify-content:space-between}
+.foot.ok{background:color-mix(in srgb,var(--ok) 18%,var(--bg))}.foot.no{background:color-mix(in srgb,var(--bad) 18%,var(--bg))}
+.go{background:var(--ok);color:#fff;border:0;border-bottom:5px solid rgba(0,0,0,.25);border-radius:12px;padding:12px 28px;font-weight:800}
+.go[disabled]{background:var(--sf2);color:var(--mu);cursor:not-allowed}
+.end{text-align:center;padding:30px 0}.end .big{font-size:64px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--xp);color:#14213d;font-weight:800;padding:10px 18px;border-radius:12px;z-index:20;display:none}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header><div class="bar">
+ <div class="logo">CodeQuest</div>
+ <div class="stat" title="Day streak">🔥 <span id="st">0</span></div>
+ <div class="stat" title="XP">⚡ <span id="xp">0</span> XP</div>
+ <div class="stat" title="Level">Lv <span id="lv">1</span></div>
+ <div class="lvl" aria-label="Progress to next level"><i id="lvb"></i></div>
+</div></header>
+<main>
+ <section><div class="tabs" id="tabs"></div><h2 id="th">Your Python trail</h2><div class="trail" id="trail"></div></section>
+ <aside class="side">
+  <div class="card"><h2>Badges</h2><div class="badges" id="badges"></div></div>
+  <div class="card"><h2>This week's leaderboard</h2><ul class="lb" id="lb"></ul></div>
+  <button class="ghost" id="reset">Reset progress</button>
+ </aside>
+</main>
+<div id="play" role="dialog" aria-modal="true" aria-label="Lesson">
+ <div class="ptop"><button class="x" id="quit" aria-label="Quit lesson">✕</button><div class="prog"><i id="pg"></i></div><div class="stat">❤️ <span id="hp">5</span></div></div>
+ <div class="pbody" id="pb"></div>
+ <div class="foot" id="ft"><div class="in"><div id="fb"></div><button class="go" id="act" disabled>Check</button></div></div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<script>
+const PY=[
+{n:"Variables",d:"Store and print values",i:"📦",q:[
+ {q:"Which line creates a variable named score with the value 10?",o:["score = 10","10 = score","var score = 10","let score := 10"],a:0},
+ {q:"Fill the blank to store the text Ada.",c:'name = ___\nprint(name)',o:['"Ada"','Ada','(Ada)'],a:0},
+ {q:"What does print(2 + 3) show?",o:["5","23","2 + 3","An error"],a:0},
+ {q:"What is the type of 3.14 in Python?",o:["int","float","str","bool"],a:1}]},
+{n:"Loops",d:"Repeat things without typing twice",i:"🔁",q:[
+ {q:"Fill the blank to repeat 3 times.",c:'for i in ___(3):\n    print(i)',o:["range","loop","repeat"],a:0},
+ {q:"What does for i in range(3): print(i) output?",o:["0 1 2","1 2 3","0 1 2 3","3"],a:0},
+ {q:"Fill the blank to add 1 to x each time.",c:'x = 0\nwhile x < 3:\n    x ___ 1',o:["+=","=+","++"],a:0},
+ {q:"Which keyword stops a loop early?",o:["break","stop","exit","end"],a:0}]},
+{n:"Functions",d:"Package code you can reuse",i:"🧩",q:[
+ {q:"Fill the blank to define a function.",c:'___ greet(name):\n    print("Hi", name)',o:["def","function","fun"],a:0},
+ {q:"What does return do?",o:["Sends a value back to the caller","Prints to the screen","Repeats the function","Deletes the function"],a:0},
+ {q:"Fill the blank so add(2, 3) gives 5.",c:'def add(a, b):\n    ___ a + b',o:["return","print","give"],a:0},
+ {q:"What is the result of add(2, 3) above?",o:["5","23","None","a + b"],a:0}]},
+{n:"Lists",d:"Hold many values at once",i:"📚",q:[
+ {q:"With fruits = ['a','b','c'], what is fruits[0]?",o:["'a'","'b'","'c'","0"],a:0},
+ {q:"Fill the blank to add \"d\" to the list.",c:'fruits.___("d")',o:["append","add","push"],a:0},
+ {q:"What does len([4, 5, 6]) return?",o:["3","6","15","2"],a:0},
+ {q:"Which expression gets the last item of fruits?",o:["fruits[-1]","fruits[last]","fruits[len]","fruits[0]"],a:0}]}
+];
+const JV=[
+{n:"Variables",d:"Types and declarations",i:"📦",q:[
+ {q:"Which declares an integer variable?",o:["int age = 20;","age = int 20;","integer age = 20;","var age := 20;"],a:0},
+ {q:"Fill the blank to store text.",c:'___ name = "Ada";',o:["String","string","Text"],a:0},
+ {q:"What does System.out.println(2 + 3) print?",o:["5","23","2 + 3","Error"],a:0}]},
+{n:"Control flow",d:"Loops and decisions",i:"🔁",q:[
+ {q:"Fill the blank to count up.",c:'for (int i = 0; i < 3; ___) {',o:["i++","i+1","++"],a:0},
+ {q:"Which keyword exits a loop early?",o:["break","stop","halt","leave"],a:0},
+ {q:"Fill the blank to compare equality.",c:'if (x ___ 5) {',o:["==","=",":="],a:0}]},
+{n:"Methods",d:"Reusable blocks of code",i:"🧩",q:[
+ {q:"Fill the blank so add returns a number.",c:'public static ___ add(int a, int b) {\n    return a + b;\n}',o:["int","void","def"],a:0},
+ {q:"What does a void method return?",o:["Nothing","0","null","An int"],a:0},
+ {q:"Which is the entry point of a Java program?",o:["public static void main(String[] args)","start()","run()","main.java"],a:0}]},
+{n:"Arrays",d:"Fixed-size collections",i:"📚",q:[
+ {q:"Which creates an int array of size 3?",o:["int[] a = new int[3];","int a = new [3];","array<int> a;","int a(3);"],a:0},
+ {q:"With int[] a = {4, 5, 6}, what is a.length?",o:["3","2","6","a.size()"],a:0},
+ {q:"What is the index of the first element?",o:["0","1","-1","first"],a:0}]}
+];
+const SQ=[
+{n:"SELECT",d:"Read data from a table",i:"🔎",q:[
+ {q:"Which gets all columns from students?",o:["SELECT * FROM students;","GET * students;","SELECT students *;","FETCH ALL students;"],a:0},
+ {q:"Fill the blank to name the table.",c:'SELECT name ___ students;',o:["FROM","IN","OF"],a:0},
+ {q:"Which returns only the name column?",o:["SELECT name FROM students;","SELECT students.name;","PICK name;","SELECT FROM name;"],a:0}]},
+{n:"Filtering",d:"Pick only the rows you need",i:"🧲",q:[
+ {q:"Fill the blank to filter rows.",c:'SELECT * FROM students ___ marks > 80;',o:["WHERE","IF","WHEN"],a:0},
+ {q:"Which matches names starting with A?",o:["name LIKE 'A%'","name = 'A*'","name STARTS 'A'","name ~ A"],a:0},
+ {q:"Which keyword needs both conditions true?",o:["AND","OR","BOTH","PLUS"],a:0}]},
+{n:"Sort and count",d:"ORDER BY and aggregates",i:"📊",q:[
+ {q:"Fill the blank for highest marks first.",c:'SELECT * FROM students ORDER BY marks ___;',o:["DESC","DOWN","HIGH"],a:0},
+ {q:"Which counts rows?",o:["COUNT(*)","TOTAL(*)","SUM(rows)","LEN(*)"],a:0},
+ {q:"Which gives the average of marks?",o:["AVG(marks)","MEAN(marks)","AVERAGE marks","MID(marks)"],a:0}]},
+{n:"Joins",d:"Combine two tables",i:"🔗",q:[
+ {q:"What does INNER JOIN return?",o:["Rows that match in both tables","All rows from both tables","Only unmatched rows","Rows from the first table only"],a:0},
+ {q:"Fill the blank to link the tables.",c:'SELECT * FROM a JOIN b ___ a.id = b.a_id;',o:["ON","BY","WITH"],a:0},
+ {q:"Which key links one table to another?",o:["Foreign key","Primary column","Index word","Link key"],a:0}]}
+];
+const JS=[
+{n:"Variables",d:"let, const and types",i:"📦",q:[
+ {q:"Which declares a variable that cannot be reassigned?",o:["const","let","var","fixed"],a:0},
+ {q:"Fill the blank for a value that changes.",c:'___ count = 0;\ncount = count + 1;',o:["let","const","int"],a:0},
+ {q:"What does console.log(typeof 'hi') print?",o:["string","text","str","char"],a:0}]},
+{n:"Functions",d:"Arrow functions and map",i:"🧩",q:[
+ {q:"Fill the blank to write an arrow function.",c:'const add = (a, b) ___ a + b;',o:["=>","->","=="],a:0},
+ {q:"Which prints to the browser console?",o:["console.log()","print()","System.out.println()","echo()"],a:0},
+ {q:"What does [1, 2, 3].map(x => x * 2) return?",o:["[2, 4, 6]","[1, 2, 3]","6","[1, 4, 9]"],a:0}]},
+{n:"Arrays",d:"Lists of values",i:"📚",q:[
+ {q:"Fill the blank to add an item.",c:'fruits.___("d");',o:["push","append","add"],a:0},
+ {q:"With arr = [4, 5, 6], what is arr.length?",o:["3","2","6","undefined"],a:0},
+ {q:"Which keeps only items that pass a test?",o:["arr.filter()","arr.select()","arr.where()","arr.keep()"],a:0}]},
+{n:"The DOM",d:"Control a web page",i:"🌐",q:[
+ {q:"Which selects the element with id title?",o:["document.getElementById('title')","document.id('title')","getElement('#title')","select('title')"],a:0},
+ {q:"Fill the blank to react to clicks.",c:'button.___("click", handler);',o:["addEventListener","onPress","listen"],a:0},
+ {q:"Which changes an element's text?",o:["el.textContent = 'Hi'","el.text('Hi')","el.write('Hi')","el.value.text"],a:0}]}
+];
+const CC=[
+{n:"Basics",d:"Print and declare",i:"📦",q:[
+ {q:"Which prints text in C?",o:['printf("Hi");','print("Hi")','cout >> "Hi";','echo "Hi"'],a:0},
+ {q:"Fill the blank to declare an integer.",c:'___ x = 5;',o:["int","num","integer"],a:0},
+ {q:"Every C statement normally ends with what?",o:[";",".",":","nothing"],a:0}]},
+{n:"Control flow",d:"Loops and decisions",i:"🔁",q:[
+ {q:"Which is a valid loop?",o:["while (x < 3) { x++; }","loop x < 3 do","repeat 3 times","while x < 3:"],a:0},
+ {q:"Fill the blank to compare equality.",c:'if (a ___ b) {',o:["==","=","equals"],a:0},
+ {q:"Which keyword skips to the next iteration?",o:["continue","next","skip","pass"],a:0}]},
+{n:"Functions",d:"main and your own",i:"🧩",q:[
+ {q:"Fill the blank for a function returning an int.",c:'___ add(int a, int b) {\n    return a + b;\n}',o:["int","def","func"],a:0},
+ {q:"Where does a C program start running?",o:["main()","start()","begin()","init()"],a:0},
+ {q:"Which header do you include for printf?",o:["stdio.h","print.h","iostream","io.h"],a:0}]},
+{n:"Pointers",d:"Work with memory addresses",i:"📍",q:[
+ {q:"What does & give you in C?",o:["The address of a variable","The value of a variable","The size of a variable","A pointer type"],a:0},
+ {q:"Fill the blank to store the address of x.",c:'int *p = ___x;',o:["&","*","@"],a:0},
+ {q:"What does *p do?",o:["Reads the value p points to","Returns the address of p","Deletes p","Multiplies p"],a:0}]}
+];
+const LG={Python:{e:"🐍",d:PY},Java:{e:"☕",d:JV},SQL:{e:"🗄️",d:SQ},JavaScript:{e:"🌐",d:JS},C:{e:"⚙️",d:CC}};
+Object.values(LG).forEach(g=>g.d.forEach(l=>l.q.forEach(q=>{const c=q.o[q.a];q.o.sort(()=>Math.random()-.5);q.a=q.o.indexOf(c)})));
+let L=PY;
+const cnt=s=>Object.values(s.p).reduce((a,b)=>a+b.length,0);
+const BD=[["🌱","First lesson",s=>cnt(s)>=1],["🔥","3-day streak",s=>s.streak>=3],["💯","Perfect lesson",s=>s.perfect>=1],["🏆","12 lessons",s=>cnt(s)>=12],["⭐","Level 3",s=>lv(s.xp)>=3],["⚡","200 XP",s=>s.xp>=200]];
+const lv=x=>Math.floor(x/50)+1;
+const $=id=>document.getElementById(id);
+const esc=t=>t.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+let S={xp:0,p:{},streak:0,last:"",perfect:0};
+try{const r=localStorage.getItem("cq2");if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
+let lang=LG[S.lang]?S.lang:"Python";
+const D=()=>S.p[lang]||(S.p[lang]=[]);
+$("tabs").onclick=e=>{const b=e.target.closest(".tab");if(b){lang=b.dataset.l;S.lang=lang;save();render()}};
+const save=()=>{try{localStorage.setItem("cq2",JSON.stringify(S))}catch(e){}};
+function toast(m){const t=$("toast");t.textContent=m;t.style.display="block";setTimeout(()=>t.style.display="none",2200)}
+function render(){
+ L=LG[lang].d;$("tabs").innerHTML=Object.keys(LG).map(k=>`<button class="tab ${k===lang?"on":""}" data-l="${k}">${LG[k].e} ${k}</button>`).join("");$("th").textContent="Your "+lang+" trail";
+ $("xp").textContent=S.xp;$("lv").textContent=lv(S.xp);$("st").textContent=S.streak;$("lvb").style.width=(S.xp%50)*2+"%";
+ $("trail").innerHTML=L.map((l,i)=>{const d=D().includes(i),open=i===0||D().includes(i-1);
+  return `<button class="node ${d?"done":""}" data-i="${i}" ${open?"":"disabled"}><div class="orb">${d?"✓":open?l.i:"🔒"}</div><div><b>${l.n}</b><span>${open?l.d:"Finish the lesson before this one"}</span></div></button>`}).join("");
+ $("badges").innerHTML=BD.map(b=>`<div class="badge ${b[2](S)?"on":""}"><div>${b[0]}</div>${b[1]}</div>`).join("");
+ const rows=[["Meera",340],["Arjun",210],["Priya",120],["Karthik",60]].concat([["You",S.xp]]).sort((a,b)=>b[1]-a[1]);
+ $("lb").innerHTML=rows.map((r,i)=>`<li class="${r[0]==="You"?"me":""}"><span>${i+1}. ${r[0]}</span><span>${r[1]} XP</span></li>`).join("");
+}
+$("trail").onclick=e=>{const b=e.target.closest(".node");if(b&&!b.disabled)start(+b.dataset.i)};
+$("reset").onclick=()=>{if(confirm("Clear all XP, progress and badges?")){S={xp:0,p:{},streak:0,last:"",perfect:0};save();render()}};
+let cur,qi,hp,sel,checked,gained,wrongs;
+function start(i){cur=i;qi=0;hp=5;gained=0;wrongs=0;$("play").classList.add("open");ask()}
+function ask(){
+ const q=L[cur].q[qi];sel=null;checked=false;$("hp").textContent=hp;$("pg").style.width=qi/L[cur].q.length*100+"%";
+ $("pb").innerHTML=`<h3>${esc(q.q)}</h3>`+(q.c?`<pre>${esc(q.c).replace("___","<u id=\"bl\">&nbsp;&nbsp;&nbsp;</u>")}</pre>`:"")+`<div class="opts">${q.o.map((o,i)=>`<button class="opt" data-i="${i}">${esc(o)}</button>`).join("")}</div>`;
+ $("ft").className="foot";$("fb").textContent="";const a=$("act");a.textContent="Check";a.disabled=true;a.style.display="";
+}
+$("pb").onclick=e=>{const o=e.target.closest(".opt");if(!o||checked)return;sel=+o.dataset.i;
+ document.querySelectorAll(".opt").forEach(x=>x.classList.toggle("sel",x===o));
+ const bl=$("bl");if(bl)bl.textContent=o.textContent;$("act").disabled=false};
+$("act").onclick=()=>{
+ if(!checked){const q=L[cur].q[qi],ok=sel===q.a;checked=true;
+  const os=document.querySelectorAll(".opt");os[q.a].classList.add("right");if(!ok)os[sel].classList.add("wrong");
+  if(ok){gained+=10;$("ft").className="foot ok";$("fb").innerHTML="<b>Correct! +10 XP</b>"}
+  else{hp--;wrongs++;$("hp").textContent=hp;$("ft").className="foot no";$("fb").innerHTML="<b>Not quite.</b> The answer is <code>"+esc(q.o[q.a])+"</code>"}
+  $("act").textContent=hp<=0?"See result":"Continue";return}
+ if(hp<=0)return finish(false);
+ qi++;if(qi>=L[cur].q.length)return finish(true);ask()};
+function finish(win){
+ $("pg").style.width="100%";const a=$("act");
+ if(win){const perfect=wrongs===0;if(perfect){gained+=20;S.perfect++}
+  const before=lv(S.xp);S.xp+=gained;if(!D().includes(cur))D().push(cur);
+  const today=new Date().toDateString(),y=new Date(Date.now()-864e5).toDateString();
+  if(S.last!==today){S.streak=S.last===y?S.streak+1:1;S.last=today}
+  save();
+  $("pb").innerHTML=`<div class="end"><div class="big">${perfect?"🏆":"🎉"}</div><h3>${L[cur].n} complete!</h3><p>You earned <b>${gained} XP</b>${perfect?" including a 20 XP perfect bonus":""}.</p>${lv(S.xp)>before?"<p><b>Level up! You are now level "+lv(S.xp)+".</b></p>":""}</div>`;
+ }else{$("pb").innerHTML=`<div class="end"><div class="big">💔</div><h3>Out of hearts</h3><p>Review the answers and try this lesson again. No XP lost.</p></div>`}
+ $("ft").className="foot";$("fb").textContent="";a.disabled=false;a.textContent="Back to trail";a.onclick=()=>{a.onclick=main;$("play").classList.remove("open");render()}}
+const main=$("act").onclick;
+$("quit").onclick=()=>{$("play").classList.remove("open");$("act").onclick=main};
+render();
+</script>
+</body>
+</html>
